@@ -1,1 +1,24 @@
-Script to add task from Thunderbird to taskwarrior
+h1. Add task from Thunderbird to taskwarrior
+
+A custom button script in Thunderbird to add emails as task in Taskwarrior
+
+h2. Dependencies
+
+Taskwarrior: http://www.taskwarrior.org/
+Thunderbird: http://www.mozillamessaging.com/thunderbird/
+Custom button add-on for Thunderbird: https://addons.mozilla.org/thunderbird/addon/custom-buttons/
+
+h2. Installation & Usage
+
+# Add new button to Thunderbird (right click on toolbar and select 'Add new button...')
+# Name: Add to task
+# Code: Copy the content Download custom-button.tb2taskwarrior
+# (optional) customise topicName (e.g. change +inbox +email tags)
+# Add created button to Thunderbird toolbar
+# Select an email and click on created button
+
+Download tb2taskwarrior.png for button icon.
+
+h2. Contribution
+
+Feel free to contribute to this project.
