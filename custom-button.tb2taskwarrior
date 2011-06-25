@@ -8,11 +8,11 @@ var taskPath = "/usr/bin/xterm";
 
 var messageUri = gFolderDisplay.selectedMessageUris[0];
 var msgHdr = messenger.messageServiceFromURI(messageUri).messageURIToMsgHdr(messageUri); 
-var box = custombuttons.promptBox("Add task", "Modify the title and press OK", msgHdr.mime2DecodedSubject);
+var box = custombuttons.promptBox("Add task", "Modify the title or add more attributes \n(e.g. due:tomorrow, pro:Party)", msgHdr.mime2DecodedSubject);
 if(box[0])
 {
 	// change arguments to task
-	var topicName = "add +inbox +email -- Email: " + box[1];
+	var topicName = "add +inbox +email Email: " + box[1];
 	var args = [ "-e", "task "+topicName+"" ];
 	
 	var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
