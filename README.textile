@@ -1,6 +1,6 @@
 h1. Add task from Thunderbird to taskwarrior
 
-"Screenshot":http://imgur.com/tHhk1
+"Screenshot":http://i.imgur.com/tHhk1.png
 !http://i.imgur.com/tHhk1.png!
 
 A custom button script in Thunderbird to add emails as task in Taskwarrior
