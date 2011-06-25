@@ -1,5 +1,8 @@
 h1. Add task from Thunderbird to taskwarrior
 
+"Screenshot":http://i.imgur.com/tHhk1.png
+!http://i.imgur.com/tHhk1.png!
+
 A custom button script in Thunderbird to add emails as task in Taskwarrior
 
 h2. Dependencies
@@ -18,6 +21,12 @@ h2. Installation & Usage
 # Select an email and click on created button
 
 Download tb2taskwarrior.png for button icon.
+
+h2. Todo
+
+* Test under Cygwin environment and Mac.
+* Add multiple-tasks
+
 
 h2. Contribution
 
