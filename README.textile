@@ -1,5 +1,7 @@
 h1. Add task from Thunderbird to taskwarrior
 
+!http://imgur.com/tHhk1
+
 A custom button script in Thunderbird to add emails as task in Taskwarrior
 
 h2. Dependencies
