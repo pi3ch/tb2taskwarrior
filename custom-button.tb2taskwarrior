@@ -7,8 +7,8 @@
 var taskPath = "/usr/bin/xterm";
 
 var messageUri = gFolderDisplay.selectedMessageUris[0];
-var msgHdr = messenger.messageServiceFromURI(messageUri).messageURIToMsgHdr(messageUri); 
-var box = custombuttons.promptBox("Add task", "Modify the title or add more attributes \n(e.g. due:tomorrow, pro:Party)", msgHdr.mime2DecodedSubject);
+var msgHdr = messenger.messageServiceFromURI(messageUri).messageURIToMsgHdr(messageUri);
+var box = custombuttons.promptBox("Add task", "Modify the title or add more attributes \n(e.g. due:tomorrow, pro:Party)", '"' + msgHdr.mime2DecodedSubject + '"');
 if(box[0])
 {
 	// change arguments to task
