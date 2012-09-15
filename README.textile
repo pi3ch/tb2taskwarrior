@@ -22,11 +22,14 @@ h2. Installation & Usage
 
 Download tb2taskwarrior.png for button icon.
 
+h2. Change log
+
+# 15 Sep 2012: cygwin support added
+
 h2. Todo
 
 * Test under Cygwin environment and Mac.
 * Add multiple-tasks
-
 
 h2. Contribution
 
