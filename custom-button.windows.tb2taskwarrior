@@ -1,0 +1,47 @@
+const mintty = "C:\\cygwin\\bin\\mintty.exe"
+var args = [ "-e", "task", "add", "+email", "+inbox"];
+
+var messageUri = gFolderDisplay.selectedMessageUris[0];
+var msgHdr = messenger.messageServiceFromURI(messageUri).messageURIToMsgHdr(messageUri);
+var box = custombuttons.promptBox("Add task", "Modify the title or add more attributes \n(e.g. due:tomorrow, pro:Party)", '"' + msgHdr.mime2DecodedSubject + '"');
+if(box[0]) {
+
+    usr = box[1];
+    
+    /* Parse user input */
+    in_quote = 0;
+    cur_arg = "";
+    for(var i=0; i<usr.length; i++) {
+        c = usr.charAt(i);
+        if (c == '"') {
+            if (in_quote) {
+                in_quote = 0;
+                args[args.length] = cur_arg;
+                cur_arg = "";
+            }
+            else in_quote = 1;
+        }
+        else if (!in_quote && (c == ' ')) {
+            args[args.length] = cur_arg;
+            cur_arg = "";
+        }
+        else cur_arg += c;
+    }
+    if (cur_arg) args[args.length] = cur_arg;
+    
+    /* Create task entry */
+    var file = Components
+      .classes["@mozilla.org/file/local;1"]
+      .createInstance(Components.interfaces.nsILocalFile)
+    
+    var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+    file.initWithPath(mintty);
+     
+    var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+    process.init(file);
+    process.run(true, args, args.length);
+    
+    custombuttons.alertSlide("Add task", "Task "+usr+" added successfully.");
+} else {
+    custombuttons.alertSlide("Add task", "Task "+usr+" has NOT added.");
+}
