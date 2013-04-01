@@ -1,0 +1,62 @@
+/*CODE*/
+// tb2taskwarrior v0.2 (with tasknote)
+// author: Johannes Schlatow
+// https://github.com/ValiValpas/tb2taskwarrior
+//
+// inspired by
+// Pedram Hayati (Pi3cH)
+// https://github.com/pi3ch/tb2taskwarrior
+
+Components.utils.import("resource://gre/modules/NetUtil.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
+
+try {
+var localFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+localFile.initWithPath("/tmp/msg.eml");
+if (localFile.exists()) {
+  localFile.remove(0);
+}
+
+var messageUri = gFolderDisplay.selectedMessageUris[0];
+var messageService = messenger.messageServiceFromURI(messageUri);
+var messageStream = Components.classes["@mozilla.org/network/sync-stream-listener;1"].createInstance().QueryInterface(Components.interfaces.nsIInputStream);
+messageService.streamMessage(messageUri, messageStream, {}, null, false, null);
+
+var output = FileUtils.openSafeFileOutputStream(localFile);
+NetUtil.asyncCopy(messageStream, output, function(status) {
+  if (!Components.isSuccessCode(status)) {
+    alert("Could not save message!");
+    return;
+  }  
+
+  messageStream.close();
+  inputStream.close();
+});
+
+} catch (e) {
+  alert(e.message);
+}
+
+//Path to xterm
+var xterm_path = "/usr/bin/xterm";
+var taskmail_path = "~/bin/taskmail";
+
+var box = custombuttons.promptBox("Add task", "Add more attributes \n(e.g. due:tomorrow, pro:Party)", "+email proj:email due:5d pri:m");
+if(box[0])
+{
+  // change arguments to task
+	var args = [ "-e", taskmail_path+" /tmp/msg.eml "+box[1]+"" ];
+	
+	var file = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+	file.initWithPath(xterm_path);
+	 
+	var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+	process.init(file);
+	 
+	process.run(true, args, args.length);
+	custombuttons.alertSlide("Add task", "Task added successfully.");
+} else {
+	custombuttons.alertSlide("Add task", "Task has NOT been added.");
+}
+
+localFile.remove(0);
