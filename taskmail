@@ -1,0 +1,145 @@
+#!/usr/bin/perl
+
+##############################################################################
+# taskmail - reads an eml file and writes its plain text into a notes file for use
+# with taskwarrior and taskopen/tasknote.
+#
+# Copyright 2011, Johannes Schlatow.
+# All rights reserved.
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the
+#
+# Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor,
+# Boston, MA
+# 02110-1301
+# USA
+#
+###############################################################################
+
+use strict;
+use warnings;
+
+use MIME::Parser;
+
+#MIME::Tools->debugging(1);
+#MIME::Tools->quiet(0);
+
+######################
+# config
+
+my $task_bin = "/usr/bin/task";
+my $notes_path = "$ENV{HOME}/Dropbox/.task/notes/";
+my $notes_file_ext = ".txt";
+
+sub parse_multipart
+{
+	my $entity;
+	($entity) = @_;
+
+	my $parts = $entity->parts();
+	for (my $i=0; $i < $parts; $i++) {
+		my $subpart = $entity->parts($i);
+
+		if ($subpart->effective_type =~ /multipart/) {
+			$subpart = parse_multipart($subpart);
+		}
+
+		if ($subpart->effective_type =~ /text\/plain/) {
+			return $subpart;
+		}
+	}
+
+	return 0;
+}
+
+######################
+# init 
+
+my $inputfile = $ARGV[0];
+if (!$inputfile || !-e $inputfile) {
+	die "input file does not exist\n";
+}
+
+shift(@ARGV);
+my $args = join(" ", @ARGV);
+
+my $parser = new MIME::Parser;
+$parser->output_dir("/tmp/");
+$parser->decode_headers(1);
+
+
+######################
+# parse
+
+my $entity = $parser->parse_open($inputfile) or die "parse failed\n";
+
+# multipart
+my $body;
+my $type = $entity->effective_type;
+if ($type =~ /(message|multipart)/) {
+	my $res = parse_multipart($entity);
+
+	if (!$res) {
+		die "no text/plain found in multipart message\n";
+	}
+	else {
+		$body = $res->bodyhandle;
+	}
+
+} else {
+   $body = $entity->bodyhandle;
+	print "is $type";
+}
+
+my $head = $entity->head;
+my $subject = $head->get('Subject');
+my $from    = $head->get('From');
+
+if (!$subject) {
+	die "no subject found, file may be broken\n";
+}
+
+$subject =~ s/([#\$!\(\)\[\]\{\}'"`&;<>\*\|])/\\$1/g;
+
+######################
+# insert task
+
+my $output = qx{$task_bin add $args -- $subject};
+if ($output !~ /Created task/) {
+	die $output;
+}
+
+#find UUID from task
+my $id = qx{$task_bin _ids | tail -1};
+chomp($id);
+my $uuid = qx{$task_bin $id uuids};
+chomp($uuid);
+
+#annotate task
+qx{$task_bin $id annotate Notes};
+
+######################
+# create notes file
+
+open(OUTFILE, ">$notes_path$uuid$notes_file_ext");
+print OUTFILE "$uuid\n\n";
+print OUTFILE "# $subject";
+print OUTFILE "From: $from\n";
+$body->print(\*OUTFILE);
+
+######################
+# cleanup
+close OUTFILE;
+$entity->purge();
