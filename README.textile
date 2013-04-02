@@ -10,6 +10,8 @@ h2. Dependencies
 Taskwarrior: http://www.taskwarrior.org/
 Thunderbird: http://www.mozillamessaging.com/thunderbird/
 Custom button add-on for Thunderbird: https://addons.mozilla.org/thunderbird/addon/custom-buttons/
+For recent versions of Thunderbird (if above link will not install): http://custombuttons.mozdev.org/devbuilds.html
+Install perl MIME-tools: sudo apt-get install libmime-tools-perl or Archlinux: extra/perl-mime-tools 
 
 h2. Installation & Usage
 
